@@ -1,0 +1,51 @@
+---
+- hosts: 127.0.0.1
+  sudo: True
+
+  vars:
+     contents: "{{ lookup('file', 'config.xml') }}"
+
+  pre_tasks:
+
+    - name: add repo for java 8
+      apt_repository: repo='ppa:webupd8team/java' state=present
+
+    - name: set licence selected
+      shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+      sudo: yes
+
+    - name: set licence seen
+      shell: /bin/echo debconf shared/accepted-oracle-license-v1-1 seen true | /usr/bin/debconf-set-selections
+      sudo: yes
+
+    - name: install java 8
+      apt: name=oracle-java8-installer state=latest update-cache=yes force=yes
+
+  tasks:
+    - name: Install Git
+      apt: pkg=git state=installed update_cache=true
+
+    - name: Check if Appfolder exists
+      command: ls
+      register: list
+
+    - name: Clone if doesn't exist
+      command: git clone https://github.com/CSC-326/JSPDemo.git
+      when: "list.stdout.find('JSPDemo') == -1"
+
+    - name: Clone config.xml
+      command: git clone https://github.com/swetha1194/hw1-b.git
+      when: "list.stdout.find('hw1-b') == -1"
+
+
+    - name: Install Maven
+      apt: pkg=maven state=installed update_cache=true
+
+    - name: Download Jenkins CLI
+      command: wget --timestamp http://localhost:8080/jnlpJars/jenkins-cli.jar
+
+    - name: create jenkins jobs with xml files
+      shell: "java -jar jenkins-cli.jar -s http://localhost:8080 create-job JSPDemo < hw1-b/config.xml --username admin --password jenkinspwd16@@"
+      
+    - name: Build Jenkins job
+      shell: "java -jar jenkins-cli.jar -s http://localhost:8080 build JSPDemo --username admin --password jenkinspwd16@@"
