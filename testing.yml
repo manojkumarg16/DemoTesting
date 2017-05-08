@@ -1,7 +1,6 @@
 ---
 - hosts: 127.0.0.1
-  sudo: True
-
+  become: true
   vars:
      contents: "{{ lookup('file', 'config.xml') }}"
 
@@ -41,8 +40,10 @@
     - name: Install Maven
       apt: pkg=maven state=installed update_cache=true
 
-    - name: Download Jenkins CLI
-      command: wget --timestamp http://localhost:8080/jnlpJars/jenkins-cli.jar
+    - name: Jenkis
+      get_url:
+        url: "http://localhost:8080/jnlpJars/jenkins-cli.jar"
+        dest: /vagrant/assignments/DemoTesting
 
     - name: create jenkins jobs with xml files
       shell: "java -jar jenkins-cli.jar -s http://localhost:8080 create-job AnsibleDemo < DemoTesting/config.xml --username admin --password jenkinspwd16@@"
