@@ -13,8 +13,8 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>cd /var/lib/jenkins/workspace/JSPDemo
-mvn package</command>
+      <command>cd /users/lenovo/workspace/Demo
+mvn test</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

@@ -30,12 +30,12 @@
       register: list
 
     - name: Clone if doesn't exist
-      command: git clone https://github.com/CSC-326/JSPDemo.git
-      when: "list.stdout.find('JSPDemo') == -1"
+      command: git clone https://github.com/manojkumarg16/Demo.git
+      when: "list.stdout.find('Demo') == -1"
 
     - name: Clone config.xml
-      command: git clone https://github.com/swetha1194/hw1-b.git
-      when: "list.stdout.find('hw1-b') == -1"
+      command: git clone https://github.com/manojkumarg16/DemoTesting.git
+      when: "list.stdout.find('DemoTesting') == -1"
 
 
     - name: Install Maven
@@ -45,7 +45,7 @@
       command: wget --timestamp http://localhost:8080/jnlpJars/jenkins-cli.jar
 
     - name: create jenkins jobs with xml files
-      shell: "java -jar jenkins-cli.jar -s http://localhost:8080 create-job JSPDemo < hw1-b/config.xml --username admin --password jenkinspwd16@@"
+      shell: "java -jar jenkins-cli.jar -s http://localhost:8080 create-job AnsibleDemo < DemoTesting/config.xml --username admin --password jenkinspwd16@@"
       
     - name: Build Jenkins job
-      shell: "java -jar jenkins-cli.jar -s http://localhost:8080 build JSPDemo --username admin --password jenkinspwd16@@"
+      shell: "java -jar jenkins-cli.jar -s http://localhost:8080 build AnsibleDemo --username admin --password jenkinspwd16@@"
