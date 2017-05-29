@@ -18,11 +18,24 @@
       sudo: yes
 
   tasks:
+    
+    - name: check if Java is already installed
+      shell: which java
+      register: oracle_java_task_installed
+      changed_when: false
+
     - name: install java 8
       apt: name=oracle-java8-installer state=latest update-cache=yes force=yes
-
+      when: oracle_java_task_installed.rc > 0
+     
+    - name: check if Git is already installed
+      shell: which git
+      register: git_task_installed
+      changed_when: false
+ 
     - name: Install Git
       apt: pkg=git state=installed update_cache=true
+      when: git_task_installed.rc > 0
 
     - name: Check if Appfolder exists
       command: ls
@@ -36,17 +49,24 @@
       command: git clone https://github.com/manojkumarg16/DemoTesting.git
       when: "list.stdout.find('DemoTesting') == -1"
 
+    - name: check if Maven is already installed
+      shell: mvn -v
+      register: maven_task_installed
+      changed_when: false
+      sudo: yes
 
     - name: Install Maven
       apt: pkg=maven state=installed update_cache=true
+      when: maven_task_installed.rc > 0
 
     - name: Download Jenkins CLI 
       get_url: 
         url: "http://localhost:8080/jnlpJars/jenkins-cli.jar"
-        dest: /assignments/DemoTesting/jenkins_cli.jar
+        dest: DemoTesting/jenkins-cli
+        mode: 0440
 
     - name: create jenkins jobs with xml files
-      shell: "java -jar jenkins-cli.jar -s http://localhost:8080 create-job AnsibleDemo < DemoTesting/config.xml --username admin --password jenkinspwd16@@"
+      shell: "java -jar /DemoTesting/jenkins-cli.jar -s http://localhost:8080 create-job AnsibleDemo < DemoTesting/config.xml --username admin --password jenkinspwd16@@"
       
     - name: Build Jenkins job
       shell: "java -jar jenkins-cli.jar -s http://localhost:8080 build AnsibleDemo --username admin --password jenkinspwd16@@"
